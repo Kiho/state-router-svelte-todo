@@ -34,7 +34,7 @@ export default function (defaultOptions: { data?: any }) {
 
 					svelte = construct(template.component, options)
 				}
-				svelte.asrReset = createComponentResetter(svelte)
+				// svelte.asrReset = createComponentResetter(svelte)
 			} catch (e) {
 				cb(e)
 				return
@@ -64,9 +64,14 @@ export default function (defaultOptions: { data?: any }) {
 			render,
 			reset: function reset(context: IRouteContext, cb: () => void) {
 				const svelte = context.domApi
+				const element = svelte.mountedToTarget
 
-				svelte.asrReset(context.content)
-				cb()
+				// svelte.asrReset(context.content)
+				// cb()
+				svelte.destroy()
+				const renderContext = Object.assign({ element }, context)
+
+				render(renderContext, cb)
 			},
 			destroy: function destroy(svelte: IRouteComponent, cb: () => void) {
 				svelte.destroy()
@@ -86,18 +91,18 @@ export default function (defaultOptions: { data?: any }) {
 	}
 }
 
-function createComponentResetter(component: IRouteComponent) {
-	const originalData = copy(component.get())
+// function createComponentResetter(component: IRouteComponent) {
+// 	const originalData = copy(component.get())
 
-	return function reset(newData) {
-		const resetObject = Object.create(null)
-		Object.keys(component.get()).forEach(key => {
-			resetObject[key] = undefined
-		})
-		Object.assign(resetObject, copy(originalData), newData)
-		component.set(resetObject)
-	}
-}
+// 	return function reset(newData) {
+// 		const resetObject = Object.create(null)
+// 		Object.keys(component.get()).forEach(key => {
+// 			resetObject[key] = undefined
+// 		})
+// 		Object.assign(resetObject, copy(originalData), newData)
+// 		component.set(resetObject)
+// 	}
+// }
 
 function instantiateWithMethods(component, options, methods) {
 	return Object.assign(new component(options), methods)

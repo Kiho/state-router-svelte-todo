@@ -48,12 +48,13 @@ export default function(stateRouter: IStateRouter) {
 			})
 
 			svelte.on('remove', function(taskIndex) {
-				const topicId = this.get('topicId')
-				const tasksWithIndexElementRemoved = this.get('tasks').slice()
+				const topicId = svelte.get('topicId')
+				let tasksWithIndexElementRemoved = svelte.get('tasks').slice()
 
 				tasksWithIndexElementRemoved.splice(taskIndex, 1)
+				console.log('tasksWithIndexElementRemoved', topicId, tasksWithIndexElementRemoved)
 
-				this.set({
+				svelte.set({
 					tasks: tasksWithIndexElementRemoved
 				})
 
@@ -61,10 +62,10 @@ export default function(stateRouter: IStateRouter) {
 			})
 
 			function createNewTask(taskName) {
-				const parentTopicId = svelte.get('topicId')
-				console.log('topicId', topicId, 'parentTopicId', parentTopicId)				
-				console.log('context.parameters.topicId', context.parameters.topicId)
-				const task = model.saveTask(parentTopicId, taskName)
+				// const parentTopicId = svelte.get('topicId')
+				//console.log('topicId', topicId, 'parentTopicId', parentTopicId)				
+				// console.log('context.parameters.topicId', context.parameters.topicId)
+				const task = model.saveTask(topicId, taskName)
 				const newTasks = svelte.get('tasks').concat(task)
 				svelte.set({
 					tasks: newTasks
