@@ -9,7 +9,7 @@ const UUID_V4_REGEX = '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{
 export default function(stateRouter: IStateRouter) {
 	stateRouter.addState({
 		name: 'app.topics.tasks',
-		route: '/:topicId(' + UUID_V4_REGEX + ')',
+		route: '/:topicId(' + UUID_V4_REGEX + ')', 
 		template: {
 			component: Component,
 			options: {

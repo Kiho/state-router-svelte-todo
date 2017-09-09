@@ -29,7 +29,14 @@ interface IRouteContext {
         : () => { cancel: () => any };
 }
 
+
+interface IResolveCallack {    
+    redirect?: (route: string) => void;
+    (err, content) : void;
+}
+
 interface IStateRouter {
+
     addState: (state: {
         name: string,
         route: string,
@@ -38,13 +45,13 @@ interface IStateRouter {
             typeof Svelte | { 
             component: typeof Svelte, options: { methods?: any } 
         },
-		resolve?: (data, parameters: StringCollection, cb) => any,
+		resolve?: (data, parameters: StringCollection, cb: IResolveCallack) => any,
 		activate?: (context: IRouteContext) => void
     }) => void;
 
-    go(newStateName: string, parameters?, options?);
+    go(newStateName: string, parameters?: StringCollection, options?);
 
-    makePath(stateName: string, parameters, options);
+    makePath(stateName: string, parameters: StringCollection, options);
 
     stateIsActive(stateName: string, opts);
 
