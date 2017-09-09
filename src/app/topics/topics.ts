@@ -1,6 +1,6 @@
-import all from 'async-all'
 import Component from './topics.html'
 import Tasks from './tasks/tasks'
+import { allWithAsync } from '../../router/async';
 
 declare var process;
 
@@ -12,11 +12,11 @@ export default function(stateRouter: IStateRouter) {
 		route: '/topics',
 		defaultChild: 'no-task',
 		template: Component,
-		resolve: function(data, parameters, cb) {
-			all({
-				topics: model.getTopics,
-				tasks: model.getTasks
-			}, cb)
+		resolve: async function(data, parameters) {
+			const topics = model.getTopicsAsync();
+			const tasks = model.getTasksMapAsync(topics);
+			return allWithAsync(topics, tasks)
+				.then(data => ({ topics: data[0], tasks: data[1] }));
 		},
 		activate: function(context) {
 			const svelte = context.domApi

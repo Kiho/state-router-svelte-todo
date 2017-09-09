@@ -1,8 +1,8 @@
 import Component from './tasks.html'
 import NoTaskSelected from './no-task-selected.html'
+import { allWithAsync } from '../../../router/async';
 
 const model = require('../../../../modules/model.js')
-const all = require('async-all')
 
 const UUID_V4_REGEX = '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}'
 
@@ -26,12 +26,12 @@ export default function(stateRouter: IStateRouter) {
 				}
 			}
 		},
-		resolve: function(data, parameters, cb) {
-			all({
-				topic: model.getTopic.bind(null, parameters.topicId),
-				tasks: model.getTasks.bind(null, parameters.topicId),
-				topicId: parameters.topicId
-			}, cb)
+		resolve: async function(data, parameters) {
+			const topicId = parameters.topicId;
+			const topic = model.getTopicAsync.bind(null, topicId);
+			const tasks = model.getTasksAsync.bind(null, topicId);
+			return allWithAsync(topic(), tasks(), topicId)
+				.then(data => ({ topic: data[0], tasks: data[1], topicId: data[2] }));
 		},
 		activate: function(context) {
 			const svelte = context.domApi
@@ -62,9 +62,6 @@ export default function(stateRouter: IStateRouter) {
 			})
 
 			function createNewTask(taskName) {
-				// const parentTopicId = svelte.get('topicId')
-				//console.log('topicId', topicId, 'parentTopicId', parentTopicId)				
-				// console.log('context.parameters.topicId', context.parameters.topicId)
 				const task = model.saveTask(topicId, taskName)
 				const newTasks = svelte.get('tasks').concat(task)
 				svelte.set({
@@ -73,7 +70,6 @@ export default function(stateRouter: IStateRouter) {
 			}
 
 			svelte.findElement('.add-new-task').focus()
-			// (<HTMLElement>svelte.mountedToTarget.querySelector('.add-new-task')).focus()
 		}
 	})
 

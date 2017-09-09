@@ -10,13 +10,11 @@ export default function(stateRouter: IStateRouter) {
 		route: '/app',
 		defaultChild: 'topics',
 		template: Component,
-		resolve: function resolve(data, parameters, cb) {
+		resolve: async function resolve(data, parameters, cb) {
 			const currentUser = model.getCurrentUser()
 
 			if (currentUser.name) {
-				cb(null, {
-					currentUser
-				})
+				return { currentUser };
 			} else {
 				cb.redirect('login')
 			}
