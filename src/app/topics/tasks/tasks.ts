@@ -1,6 +1,6 @@
 import Component from './tasks.html'
 import NoTaskSelected from './no-task-selected.html'
-import { allWithAsync } from '../../../router/async';
+import { allWithMapAsync } from '../../../router/async';
 
 const model = require('../../../../modules/model.js')
 
@@ -28,10 +28,9 @@ export default function(stateRouter: IStateRouter) {
 		},
 		resolve: async function(data, parameters) {
 			const topicId = parameters.topicId;
-			const topic = model.getTopicAsync.bind(null, topicId);
-			const tasks = model.getTasksAsync.bind(null, topicId);
-			return allWithAsync(topic(), tasks(), topicId)
-				.then(data => ({ topic: data[0], tasks: data[1], topicId: data[2] }));
+			const topic = model.getTopicAsync(topicId);
+			const tasks = model.getTasksAsync(topicId);
+			return allWithMapAsync({topic, tasks, topicId});
 		},
 		activate: function(context) {
 			const svelte = context.domApi
